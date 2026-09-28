@@ -1,0 +1,201 @@
+name: Build Livingstone Sports Media APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Android project
+        run: |
+          mkdir -p app/src/main/java/com/livingstonesportsmedia
+          mkdir -p app/src/main/res/layout
+          mkdir -p app/src/main/res/values
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "LivingstoneSportsMedia"
+          include(":app")
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'com.livingstonesportsmedia'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'com.livingstonesportsmedia'
+                  minSdk 23
+                  targetSdk 35
+                  versionCode 1
+                  versionName '1.0'
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+              <uses-permission android:name="android.permission.INTERNET"/>
+
+              <application
+                  android:theme="@style/AppTheme"
+                  android:label="Livingstone Sports Media"
+                  android:allowBackup="true">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+
+                  </activity>
+
+              </application>
+
+          </manifest>
+          EOF
+
+          cat > app/src/main/res/values/styles.xml <<'EOF'
+          <resources>
+              <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:colorAccent">#1565C0</item>
+                  <item name="android:navigationBarColor">#000000</item>
+                  <item name="android:statusBarColor">#0D47A1</item>
+                  <item name="android:windowLightStatusBar">false</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > app/src/main/res/layout/activity_main.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+
+          <LinearLayout
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="#F5F7FA">
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="20dp"
+                  android:text="Livingstone Sports Media"
+                  android:textColor="#FFFFFF"
+                  android:textSize="23sp"
+                  android:textStyle="bold"
+                  android:background="#0D47A1"/>
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="16dp"
+                  android:text="LIVE SCORES"
+                  android:textSize="20sp"
+                  android:textStyle="bold"
+                  android:textColor="#0D47A1"/>
+
+              <ScrollView
+                  android:layout_width="match_parent"
+                  android:layout_height="0dp"
+                  android:layout_weight="1">
+
+                  <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:padding="12dp">
+
+                      <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="18dp"
+                          android:background="#FFFFFF"
+                          android:text="Liverpool     2  -  1     Arsenal&#10;&#10;LIVE"
+                          android:textSize="19sp"
+                          android:textStyle="bold"
+                          android:textColor="#222222"/>
+
+                      <Space
+                          android:layout_width="match_parent"
+                          android:layout_height="12dp"/>
+
+                      <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="18dp"
+                          android:background="#FFFFFF"
+                          android:text="Zambia       1  -  0     Malawi&#10;&#10;LIVE"
+                          android:textSize="19sp"
+                          android:textStyle="bold"
+                          android:textColor="#222222"/>
+
+                      <Space
+                          android:layout_width="match_parent"
+                          android:layout_height="12dp"/>
+
+                      <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:padding="18dp"
+                          android:background="#FFFFFF"
+                          android:text="TODAY'S FIXTURES&#10;&#10;Chelsea vs Manchester City&#10;&#10;Barcelona vs Real Madrid"
+                          android:textSize="18sp"
+                          android:textColor="#222222"/>
+
+                  </LinearLayout>
+
+              </ScrollView>
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="16dp"
+                  android:gravity="center"
+                  android:text="Live Scores • Fixtures • Results • Sports News"
+                  android:textColor="#FFFFFF"
+                  android:background="#0D47A1"/>
+
+          </LinearLayout>
+          EOF
+
+          cat > app/src/main/java/com/livingstonesportsmedia/MainActivity.java <<'EOF'
+          package com.livingstonesportsmedia;
+
+          import android.app.Activity;
+         
